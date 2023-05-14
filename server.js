@@ -5,27 +5,30 @@ const passport = require("passport");
 const path = require("path");
 
 const users = require("./routes/api/users");
+const posts = require("./routes/api/posts");
 
 const app = express();
 
 // Bodyparser middleware
 app.use(
-    bodyParser.urlencoded({
-      extended: false
-    })
-  );
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
 
 app.use(bodyParser.json());
 
-const dbURL =  "mongodb://localhost:27017/mern-auth";
+const dbURL =
+  "mongodb+srv://junith:9oetA6mMXTEfFlYE@cluster0.lihyu7f.mongodb.net/?retryWrites=true&w=majority";
 
 //connect to MongoDB
 mongoose
-    .connect(process.env.MONGODB_URI || dbURL,
-    { useUnifiedTopology:true, useNewUrlParser: true }
-    )
-    .then(() => console.log("MongoDB successfully connected"))
-    .catch(err => console.log(err));
+  .connect(process.env.MONGODB_URI || dbURL, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
+  .then(() => console.log("MongoDB successfully connected"))
+  .catch((err) => console.log(err));
 
 // Passport middleware
 app.use(passport.initialize());
@@ -35,17 +38,16 @@ require("./config/passport")(passport);
 
 // Routes
 app.use("/api/users", users);
+app.use("/api/posts", posts);  
 
-if(process.env.NODE_ENV === 'production') {
-   
-  app.use(express.static(path.join(__dirname, "client", "build")))
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client", "build")));
 
-  app.get('*',(req, res) => {
-      res.sendFile(path.join(__dirname,'client','build','index.html'));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
   });
 }
 
-
 const port = process.env.PORT || 5000;
 
-app.listen(port,()=>console.log(`Server up and running on port ${port}`));
+app.listen(port, () => console.log(`Server up and running on port ${port}`));
